@@ -5,7 +5,7 @@ Codecamp::Application.routes.draw do
     post 'follow', on: :member
     delete 'unfollow', on: :member
   end
-  resources :posts
+  resources :posts, only: [ :index, :create, :destroy ]
   resource :sessions, only: [ :new, :create, :destroy ]
   get '/sandbox', to: 'root#sandbox' if Rails.env.development?
   root to: 'root#home' # This maps '/' to the root#home action

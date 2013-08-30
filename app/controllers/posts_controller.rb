@@ -1,6 +1,14 @@
 class PostsController < ApplicationController
 	def index
-		@posts = Post.from_followed_users(current_user).order("created_at DESC")
+    if params[:search].blank?
+  		@posts = Post.from_followed_users(current_user).order("created_at DESC").paginate(page: params[:page])
+    else
+      @posts = Post.search do
+        fulltext params[:search]
+        paginate(page: params[:page])
+        order_by :created_at, :desc
+      end.results
+    end
 		@post = current_user.posts.build
 	end
 
@@ -10,7 +18,8 @@ class PostsController < ApplicationController
   		flash[:success] = "Posted successfully"
   		redirect_to posts_path
   	else
-  		render "new"
+      flash[:error] = @post.errors.full_messages.first
+      redirect_to posts_path
   	end
   end
 

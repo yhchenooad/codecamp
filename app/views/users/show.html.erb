@@ -7,10 +7,11 @@
    		<%= render "shared/user_actions", user: @user %>
     </section>
   </aside>
- <div class="span8">
+  <div class="span8">
     <h1>Posts</h1>
     <ul class="posts">
       <%= render partial: "shared/post", collection: @posts %>
     </ul>
+    <%= will_paginate @posts %>
   </div>
 </div>

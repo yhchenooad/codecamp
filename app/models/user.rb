@@ -10,6 +10,11 @@ class User < ActiveRecord::Base
 	before_save { self.email = email.downcase }
   before_save { self.session_token ||= Digest::SHA1.hexdigest(SecureRandom.urlsafe_base64.to_s) }
 
+  searchable do
+    text :name, :email
+    time :created_at
+  end
+
   def follow(user)
   	out_followings.create(to_id: user.id)
   end

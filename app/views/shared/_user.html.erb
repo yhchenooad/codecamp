@@ -1,4 +1,12 @@
-<li class="user">
+<li class="user" user_id="<%= user.id %>">
   <%= link_to gravatar_for(user), user %>
   <%= link_to user.name, user %>
+	<small><%= pluralize user.posts.count, "posts" %></small><br>
+	<% unless current_user?(user) %>
+	  <% if current_user.following?(user) %>
+	    <%= link_to "Unfollow", "#", class: "btn btn-small" %>
+	  <% else %>
+		  <%= link_to "Follow", "#", class: "btn btn-small btn-primary" %>
+	  <% end %>
+	<% end %>
 </li>

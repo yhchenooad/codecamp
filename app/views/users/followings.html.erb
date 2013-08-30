@@ -12,5 +12,6 @@
     <ul class="users">
       <%= render partial: "shared/user", collection: @users %>
     </ul>
+    <%= will_paginate @users %>
   </div>
 </div>

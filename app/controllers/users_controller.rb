@@ -5,13 +5,21 @@ class UsersController < ApplicationController
   # GET /users
   # GET /users.json
   def index
-    @users = User.all
+    if params[:search].blank?
+      @users = User.paginate(page: params[:page])
+    else
+      @users = User.search do
+        fulltext params[:search]
+        paginate(page: params[:page])
+        order_by :created_at, :desc
+      end.results
+    end
   end
 
   # GET /users/1
   # GET /users/1.json
   def show
-    @posts = @user.posts
+    @posts = @user.posts.paginate(page: params[:page])
   end
 
   # GET /users/new
@@ -58,33 +66,41 @@ class UsersController < ApplicationController
   end
 
   def followers
-    @users = @user.followers
+    @users = @user.followers.paginate(page: params[:page])
     @title = "Followers"
     render "followings"
   end
 
   def followings
-    @users = @user.followed_users
+    @users = @user.followed_users.paginate(page: params[:page])
     @title = "Followed Users"
     render "followings"
   end
 
   def follow
-    if current_user.follow(@user)
-      flash[:success] = "You are following #{@user.name}"
+    if request.xhr?
+      render status: current_user.follow(@user).nil? ? 400 : 200, nothing: true
     else
-      flash[:error] = "Something went wrong.  You cannot follow #{@user.name}"
+      if current_user.follow(@user)
+        flash[:success] = "You are following #{@user.name}"
+      else
+        flash[:error] = "Something went wrong.  You cannot follow #{@user.name}"
+      end
+      redirect_to @user
     end
-    redirect_to @user
   end
 
   def unfollow
-    if current_user.unfollow(@user)
-      flash[:success] = "You are no longer following #{@user.name}"
+    if request.xhr?
+      render status: current_user.unfollow(@user) ? 200 : 400, nothing: true
     else
-      flash[:error] = "Something went wrong.  You cannot unfollow #{@user.name}"
+      if current_user.unfollow(@user)
+        flash[:success] = "You are no longer following #{@user.name}"
+      else
+        flash[:error] = "Something went wrong.  You cannot unfollow #{@user.name}"
+      end
+      redirect_to @user
     end
-    redirect_to @user
   end
 
   private

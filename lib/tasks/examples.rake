@@ -8,7 +8,7 @@ namespace :examples do
     # Create an empty hash with default value as an empty array
     date_hash = Hash.new { |hash, key| hash[key] = [] }
     # For each user in the system...
-    User.all.each do |user|
+    User.load.each do |user|
       # add an entry with the date as the key, and the values are 
       # arrays of users
       date_hash[user.created_at.to_date] << user 
